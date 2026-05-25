@@ -516,8 +516,7 @@
       "b": "Zielone",
       "c": "Białe"
     },
-    "correct": "a",
-    "image": "quiz-images/q52.jpg"
+    "correct": "a"
   },
   {
     "id": 53,
@@ -527,8 +526,7 @@
       "b": "Światło rufowe lub światło burtowe",
       "c": "Światło oznaczające statek zajęty połowem"
     },
-    "correct": "a",
-    "image": "quiz-images/q53.jpg"
+    "correct": "a"
   },
   {
     "id": 54,
@@ -3161,8 +3159,7 @@
       "b": "Ułożyć w pozycji bezpiecznej ustalonej i dostarczyć świeżego powietrza",
       "c": "Użyć defibrylatora"
     },
-    "correct": "b",
-    "image": "quiz-images/q310.jpg"
+    "correct": "b"
   },
   {
     "id": 309,
@@ -3214,8 +3211,7 @@
       "b": "Kotwica Danfortha ( patentowa)",
       "c": "Kotwica Bruce`a"
     },
-    "correct": "a",
-    "image": "quiz-images/q315.jpg"
+    "correct": "a"
   },
   {
     "id": 314,
@@ -3235,7 +3231,8 @@
       "b": "W porze dziennej, aby nie hałasować",
       "c": "Przy pracującym silniku głównym na obrotach gwarantujących ładowanie akumulatorów"
     },
-    "correct": "c"
+    "correct": "c",
+    "image": "quiz-images/q315.jpg"
   },
   {
     "id": 316,
@@ -3360,8 +3357,7 @@
       "b": "Rozgałęzienie – tor główny w lewo",
       "c": "Północny znak kardynalny"
     },
-    "correct": "b",
-    "image": "quiz-images/q329.jpg"
+    "correct": "b"
   },
   {
     "id": 328,
@@ -3381,7 +3377,8 @@
       "b": "Dla jachtów pływających wyłącznie po wodach śródlądowych",
       "c": "Wyłącznie dla jachtów o mocy silników poniżej 10 kW"
     },
-    "correct": "a"
+    "correct": "a",
+    "image": "quiz-images/q329.jpg"
   },
   {
     "id": 330,
@@ -3550,8 +3547,7 @@
       "b": "Lewą granicę szlaku żeglugowego",
       "c": "Rozgałęzienie szlaku żeglugowego"
     },
-    "correct": "a"
-    ,
+    "correct": "a",
     "image": "quiz-images/q346.jpg"
   },
   {
@@ -3594,8 +3590,7 @@
       "b": "1852 m",
       "c": "2052 m"
     },
-    "correct": "b",
-    "image": "quiz-images/q352.jpg"
+    "correct": "b"
   },
   {
     "id": 351,
@@ -3627,8 +3622,7 @@
       "b": "Mieszanka benzyny z olejem",
       "c": "Czysta benzyna lub mieszanka benzyny z olejem w zależności od typu silnika"
     },
-    "correct": "c",
-    "image": "quiz-images/q355.jpg"
+    "correct": "c"
   },
   {
     "id": 354,
