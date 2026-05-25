@@ -352,7 +352,7 @@ def build_html(quiz_data):
   <div class="container">
     <header>
       <h1>Quiz – Sternik motorowodny</h1>
-      <p>Wind Sailing School · 365 pytań</p>
+      <p>Wind Sailing School · 368 pytań</p>
     </header>
     <div id="start-screen" class="card start-screen">
       <p id="q-count"></p>

@@ -1,6 +1,6 @@
 # Quiz – Sternik motorowodny
 
-Interaktywny quiz (365 pytań) z pliku PDF Wind Sailing School.
+Interaktywny quiz (368 pytań) z pliku PDF Wind Sailing School.
 
 ## Uruchomienie lokalnie
 

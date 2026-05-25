@@ -382,9 +382,9 @@
     "id": 39,
     "question": "Sektor świecenie światła burtowego wynosi",
     "options": {
-      "a": "112,5 0",
-      "b": "90 0",
-      "c": "130 0"
+      "a": "112,5 stopni",
+      "b": "90 stopni",
+      "c": "130 stopni"
     },
     "correct": "a"
   },
@@ -392,9 +392,9 @@
     "id": 40,
     "question": "Sektor świecenia światła masztowego wynosi:",
     "options": {
-      "a": "225 0",
-      "b": "215 0",
-      "c": "235 0"
+      "a": "225 stopni",
+      "b": "215 stopni",
+      "c": "235 stopni"
     },
     "correct": "a"
   },
@@ -402,9 +402,9 @@
     "id": 41,
     "question": "Sektor świecenia światła rufowego wynosi:",
     "options": {
-      "a": "145 0",
-      "b": "135 0",
-      "c": "180"
+      "a": "145 stopni",
+      "b": "135 stopni",
+      "c": "180 stopni"
     },
     "correct": "b"
   },
@@ -3504,7 +3504,7 @@
   },
   {
     "id": 342,
-    "question": "Średni czas przeżycia człowieka w wodzie 0 o temperaturze 10 wynosi",
+    "question": "Średni czas przeżycia człowieka w wodzie o temperaturze 10 stopni wynosi",
     "options": {
       "a": "Ponad 3 godziny",
       "b": "Około 2 godziny",
@@ -3771,5 +3771,15 @@
     },
     "correct": "c",
     "image": "quiz-images/q367.jpg"
+  },
+  {
+    "id": 368,
+    "question": "Po zauważeniu pożaru na statku w ruchu należy:",
+    "options": {
+      "a": "Ustawić się na takim kursie, żeby wiatr nie rozprzestrzeniał pożaru za inne części statku",
+      "b": "Jak najprędzej dopłynąć do portu",
+      "c": "Niezwłocznie opuścić jednostkę"
+    },
+    "correct": "a"
   }
 ]
