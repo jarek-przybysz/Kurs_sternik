@@ -291,7 +291,7 @@
   },
   {
     "id": 30,
-    "question": "Sygnał dźwiękowy złożony z następujących dźwięków oznacza:",
+    "question": "Sygnał dźwiękowy złożony z następujących dźwięków * * oznacza:",
     "options": {
       "a": "Zmieniam swój kurs w lewo",
       "b": "Zmieniam swój kurs w prawo",
@@ -301,7 +301,7 @@
   },
   {
     "id": 31,
-    "question": "Sygnał dźwiękowy złożony z następujących dźwięków oznacza:",
+    "question": "Sygnał dźwiękowy złożony z następujących dźwięków * oznacza:",
     "options": {
       "a": "Zmieniam swój kurs w lewo",
       "b": "Zmieniam swój kurs w prawo",
@@ -3162,7 +3162,7 @@
       "c": "Użyć defibrylatora"
     },
     "correct": "b",
-    "image": "quiz-images/q308.jpg"
+    "image": "quiz-images/q310.jpg"
   },
   {
     "id": 309,
@@ -3193,8 +3193,7 @@
       "b": "Pawęż",
       "c": "dziobnica"
     },
-    "correct": "b",
-    "image": "quiz-images/q311.jpg"
+    "correct": "b"
   },
   {
     "id": 312,
@@ -3204,7 +3203,8 @@
       "b": "Kotwica Danfortha ( patentowa)",
       "c": "Kotwica pługowa"
     },
-    "correct": "b"
+    "correct": "b",
+    "image": "quiz-images/q312.jpg"
   },
   {
     "id": 313,
@@ -3215,7 +3215,7 @@
       "c": "Kotwica Bruce`a"
     },
     "correct": "a",
-    "image": "quiz-images/q313.jpg"
+    "image": "quiz-images/q315.jpg"
   },
   {
     "id": 314,
@@ -3285,8 +3285,7 @@
       "b": "Przy wymianie oleju",
       "c": "Na początku sezonu"
     },
-    "correct": "a",
-    "image": "quiz-images/q320.jpg"
+    "correct": "a"
   },
   {
     "id": 321,
@@ -3296,8 +3295,7 @@
       "b": "Chłodzenie następuje płynem będącym w specjalnym zbiorniku",
       "c": "Chłodzenie następuje wodą, po której płynie jednostka"
     },
-    "correct": "c",
-    "image": "quiz-images/q321.jpg"
+    "correct": "c"
   },
   {
     "id": 322,
@@ -3351,7 +3349,8 @@
       "b": "Rozgałęzienie – tor główny w lewo",
       "c": "Zachodni znak kardynalny"
     },
-    "correct": "a"
+    "correct": "a",
+    "image": "quiz-images/q326.jpg"
   },
   {
     "id": 327,
@@ -3362,7 +3361,7 @@
       "c": "Północny znak kardynalny"
     },
     "correct": "b",
-    "image": "quiz-images/q327.jpg"
+    "image": "quiz-images/q329.jpg"
   },
   {
     "id": 328,
@@ -3552,6 +3551,8 @@
       "c": "Rozgałęzienie szlaku żeglugowego"
     },
     "correct": "a"
+    ,
+    "image": "quiz-images/q346.jpg"
   },
   {
     "id": 347,
@@ -3594,7 +3595,7 @@
       "c": "2052 m"
     },
     "correct": "b",
-    "image": "quiz-images/q350.jpg"
+    "image": "quiz-images/q352.jpg"
   },
   {
     "id": 351,
@@ -3627,7 +3628,7 @@
       "c": "Czysta benzyna lub mieszanka benzyny z olejem w zależności od typu silnika"
     },
     "correct": "c",
-    "image": "quiz-images/q353.jpg"
+    "image": "quiz-images/q355.jpg"
   },
   {
     "id": 354,
@@ -3748,5 +3749,27 @@
       "c": "Dopuszczalne tylko dla osób z wykształceniem medycznym"
     },
     "correct": "b"
+  },
+  {
+    "id": 366,
+    "question": "Przedstawiony znak oznacza:",
+    "options": {
+      "a": "Nakaz prowadzenia nasłuchu radiotelefonicznego na kanale 11",
+      "b": "Nakaz prowadzenia nasłuchu n paśmie VHFprzez 11 minut",
+      "c": "Zakaz używania wskazanego 11 kanału VHF"
+    },
+    "correct": "a",
+    "image": "quiz-images/q366.jpg"
+  },
+  {
+    "id": 367,
+    "question": "Użycie automatycznego defibrylatora jest",
+    "options": {
+      "a": "Zakaz prowadzenia komunikacji przez radiotelefon VHF",
+      "b": "Nakaz wyłączenia radiotelefonu",
+      "c": "Nakaz prowadzenia nasłuchu radiotelefonicznego"
+    },
+    "correct": "c",
+    "image": "quiz-images/q367.jpg"
   }
 ]
