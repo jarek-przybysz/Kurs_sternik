@@ -3212,7 +3212,8 @@
       "b": "Kotwica Danfortha ( patentowa)",
       "c": "Kotwica Bruce`a"
     },
-    "correct": "a"
+    "correct": "a",
+    "image": "quiz-images/q315.jpg"
   },
   {
     "id": 314,
@@ -3232,8 +3233,7 @@
       "b": "W porze dziennej, aby nie hałasować",
       "c": "Przy pracującym silniku głównym na obrotach gwarantujących ładowanie akumulatorów"
     },
-    "correct": "c",
-    "image": "quiz-images/q315.jpg"
+    "correct": "c"
   },
   {
     "id": 316,
