@@ -34,6 +34,7 @@
     .option:hover:not(:disabled) { border-color: var(--accent); background: #1e3a5f; }
     .option:disabled { cursor: default; }
     .option.correct-pick { border-color: var(--ok); background: rgba(34,197,94,0.15); }
+    .option.selected-pick { border-color: var(--accent); background: rgba(56,189,248,0.12); }
     .option.wrong-pick { border-color: var(--bad); background: rgba(239,68,68,0.15); }
     .option.show-correct { border-color: var(--yellow); background: rgba(250,204,21,0.12); }
     .feedback { margin-top: 16px; padding: 12px 16px; border-radius: 10px; font-weight: 600; display: none; }
@@ -56,6 +57,24 @@
     .start-screen p { color: var(--muted); margin: 16px 0 24px; }
     #quiz-area { display: none; }
     #quiz-area.active { display: block; }
+    .mode-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+    .mode-tab {
+      flex: 1; padding: 12px 14px; border-radius: 10px; border: 2px solid #334155;
+      background: #0f172a; color: var(--muted); font-size: 0.9rem; font-weight: 600;
+      cursor: pointer; text-align: center;
+    }
+    .mode-tab.active { border-color: var(--accent); background: rgba(56,189,248,0.12); color: var(--accent); }
+    .exam-badge {
+      display: inline-block; margin-top: 6px; padding: 4px 10px; border-radius: 6px;
+      font-size: 0.75rem; font-weight: 700; background: rgba(250,204,21,0.15); color: var(--yellow);
+    }
+    .result-pass { border-color: var(--ok) !important; color: var(--ok) !important; }
+    .result-fail { border-color: var(--bad) !important; color: var(--bad) !important; }
+    .verdict {
+      font-size: 1.35rem; font-weight: 800; margin: 12px 0 8px;
+    }
+    .verdict.pass { color: var(--ok); }
+    .verdict.fail { color: var(--bad); }
   </style>
 </head>
 <body>
@@ -64,9 +83,14 @@
       <h1>Quiz – Sternik motorowodny</h1>
       <p>Wind Sailing School · 368 pytań</p>
     </header>
+    <div class="mode-tabs" id="mode-tabs">
+      <button type="button" class="mode-tab active" data-mode="practice">Quiz</button>
+      <button type="button" class="mode-tab" data-mode="exam">Egzamin</button>
+    </div>
     <div id="start-screen" class="card start-screen">
       <p id="q-count"></p>
-      <p>Pytania w losowej kolejności. Przy znakach nawigacyjnych wyświetlany jest obraz z PDF.</p>
+      <p id="start-desc">Pytania w losowej kolejności. Przy znakach nawigacyjnych wyświetlany jest obraz z PDF. Po każdej odpowiedzi zobaczysz poprawny wynik.</p>
+      <p class="exam-badge" id="exam-info" style="display:none">Tryb egzaminacyjny: 75 losowych pytań · próg zdania: minimum 65 poprawnych · wynik dopiero na końcu</p>
       <button class="btn-start" id="btn-start">Rozpocznij quiz</button>
     </div>
     <div id="quiz-area">
@@ -87,7 +111,8 @@
       </div>
       <div class="card results" id="results">
         <div class="score-circle" id="score-pct">0%</div>
-        <h2>Koniec quizu!</h2>
+        <p class="verdict" id="verdict" style="display:none"></p>
+        <h2 id="results-title">Koniec quizu!</h2>
         <p id="score-detail"></p>
         <p id="score-effectiveness"></p>
         <button class="btn-restart" id="btn-restart">Zagraj ponownie</button>
@@ -106,7 +131,11 @@
       return a;
     }
 
+    const EXAM_SIZE = 75;
+    const EXAM_PASS = 65;
+    let mode = "practice";
     let order = [], index = 0, correctCount = 0, answered = false;
+    let examAnswers = [];
     const startScreen = document.getElementById("start-screen");
     const quizArea = document.getElementById("quiz-area");
     const qCountEl = document.getElementById("q-count");
@@ -124,13 +153,32 @@
 
     qCountEl.textContent = `Baza: ${QUESTIONS.length} pytań`;
 
+    document.querySelectorAll(".mode-tab").forEach(tab => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".mode-tab").forEach(t => t.classList.remove("active"));
+        tab.classList.add("active");
+        mode = tab.dataset.mode;
+        document.getElementById("exam-info").style.display = mode === "exam" ? "inline-block" : "none";
+        document.getElementById("start-desc").textContent = mode === "exam"
+          ? "75 losowych pytań bez podpowiedzi po każdej odpowiedzi. Na końcu zobaczysz wynik i informację, czy egzamin został zdany (minimum 65/75)."
+          : "Pytania w losowej kolejności. Przy znakach nawigacyjnych wyświetlany jest obraz z PDF. Po każdej odpowiedzi zobaczysz poprawny wynik.";
+        document.getElementById("btn-start").textContent = mode === "exam" ? "Rozpocznij egzamin" : "Rozpocznij quiz";
+      });
+    });
+
     function startQuiz() {
-      order = shuffle(QUESTIONS.map((_, i) => i));
-      index = 0; correctCount = 0;
+      const all = shuffle(QUESTIONS.map((_, i) => i));
+      order = mode === "exam" ? all.slice(0, EXAM_SIZE) : all;
+      index = 0;
+      correctCount = 0;
+      examAnswers = mode === "exam" ? [] : null;
       startScreen.style.display = "none";
+      document.getElementById("mode-tabs").style.display = "none";
       quizArea.classList.add("active");
       questionCard.style.display = "block";
       results.classList.remove("show");
+      document.getElementById("verdict").style.display = "none";
+      document.getElementById("score-pct").classList.remove("result-pass", "result-fail");
       renderQuestion();
     }
 
@@ -140,7 +188,7 @@
       const total = order.length;
       progressText.textContent = `Pytanie ${index + 1} z ${total}`;
       progressFill.style.width = ((index) / total) * 100 + "%";
-      scoreLive.textContent = `Poprawne: ${correctCount}`;
+      scoreLive.textContent = mode === "exam" ? "Tryb egzaminu" : `Poprawne: ${correctCount}`;
       qNum.textContent = `Pytanie nr ${q.id}`;
       qText.textContent = q.question;
       if (q.image) {
@@ -168,6 +216,18 @@
       if (answered) return;
       answered = true;
       const ok = letter === q.correct;
+      if (mode === "exam") {
+        examAnswers.push({ q, picked: letter, ok });
+        document.querySelectorAll(".option").forEach(opt => {
+          opt.disabled = true;
+          if (opt === btn) opt.classList.add("selected-pick");
+        });
+        feedback.className = "feedback";
+        feedback.textContent = "";
+        btnNext.classList.add("show");
+        btnNext.textContent = index + 1 >= order.length ? "Zakończ egzamin" : "Następne pytanie";
+        return;
+      }
       if (ok) correctCount++;
       document.querySelectorAll(".option").forEach(opt => {
         opt.disabled = true;
@@ -180,6 +240,7 @@
       feedback.textContent = ok ? "✓ Poprawna odpowiedź!"
         : `✗ Błędna. Prawidłowa: ${q.correct.toUpperCase()}) ${q.options[q.correct]}`;
       btnNext.classList.add("show");
+      btnNext.textContent = "Następne pytanie";
       scoreLive.textContent = `Poprawne: ${correctCount}`;
     }
 
@@ -193,13 +254,44 @@
       questionCard.style.display = "none";
       results.classList.add("show");
       progressFill.style.width = "100%";
+
       const total = order.length;
-      const pct = Math.round((correctCount / total) * 100);
-      document.getElementById("score-pct").textContent = pct + "%";
-      document.getElementById("score-detail").textContent =
-        `Poprawnie: ${correctCount} z ${total} pytań.`;
-      document.getElementById("score-effectiveness").textContent =
-        `Twoja skuteczność: ${pct}%`;
+      let score = correctCount;
+
+      if (mode === "exam") {
+        score = examAnswers.filter(a => a.ok).length;
+        correctCount = score;
+      }
+
+      const pct = Math.round((score / total) * 100);
+      const scorePctEl = document.getElementById("score-pct");
+      const verdictEl = document.getElementById("verdict");
+      const titleEl = document.getElementById("results-title");
+
+      scorePctEl.textContent = mode === "exam" ? `${score}/${total}` : pct + "%";
+      scorePctEl.classList.remove("result-pass", "result-fail");
+
+      if (mode === "exam") {
+        const passed = score >= EXAM_PASS;
+        verdictEl.style.display = "block";
+        verdictEl.className = "verdict " + (passed ? "pass" : "fail");
+        verdictEl.textContent = passed ? "EGZAMIN ZDANY ✓" : "EGZAMIN NIEZDANY ✗";
+        scorePctEl.classList.add(passed ? "result-pass" : "result-fail");
+        titleEl.textContent = "Wynik egzaminu";
+        document.getElementById("score-detail").textContent =
+          `Poprawnych odpowiedzi: ${score} z ${total} (wymagane minimum: ${EXAM_PASS}).`;
+        document.getElementById("score-effectiveness").textContent =
+          passed
+            ? `Gratulacje — spełniasz próg zdawalności (${EXAM_PASS}/${total}).`
+            : `Brakuje Ci ${EXAM_PASS - score} poprawnych odpowiedzi do zdania egzaminu.`;
+      } else {
+        verdictEl.style.display = "none";
+        titleEl.textContent = "Koniec quizu!";
+        document.getElementById("score-detail").textContent =
+          `Poprawnie: ${score} z ${total} pytań.`;
+        document.getElementById("score-effectiveness").textContent =
+          `Twoja skuteczność: ${pct}%`;
+      }
     }
 
     document.getElementById("btn-start").onclick = startQuiz;
@@ -207,7 +299,9 @@
     document.getElementById("btn-restart").onclick = () => {
       results.classList.remove("show");
       startScreen.style.display = "block";
+      document.getElementById("mode-tabs").style.display = "flex";
       quizArea.classList.remove("active");
+      btnNext.textContent = "Następne pytanie";
     };
   </script>
 </body>
