@@ -116,6 +116,17 @@
       color: var(--ok);
       font-weight: 800;
     }
+
+    .exam-wrong-image {
+      width: 100%;
+      max-height: 160px;
+      object-fit: contain;
+      border-radius: 10px;
+      background: #fff;
+      padding: 6px;
+      margin: 10px 0 6px;
+      display: block;
+    }
   </style>
 </head>
 <body>
@@ -362,8 +373,17 @@
             item.className = "exam-wrong-item";
             item.innerHTML = `
               <div class="q-title">Pytanie nr ${q.id}</div>
-              <div class="q-meta">Twoja odpowiedź: <span class="picked">${(a.picked || "").toUpperCase()})</span> ${pickedText}</div>
-              <div class="answers">Poprawna odpowiedź: <span class="correct">${correctLetter.toUpperCase()}) ${correctText}</span></div>
+              <div class="q-meta"><strong>${q.question}</strong></div>
+              ${q.image ? `<img class="exam-wrong-image" src="${q.image}" alt="Znak nawigacyjny">` : ``}
+              <div class="q-meta" style="margin-top: 8px;">
+                Twoja odpowiedź:
+                <span class="picked">${(a.picked || "").toUpperCase()})</span>
+                ${pickedText}
+              </div>
+              <div class="answers">
+                Poprawna odpowiedź:
+                <span class="correct">${correctLetter.toUpperCase()}) ${correctText}</span>
+              </div>
             `;
             wrongListEl.appendChild(item);
           });
