@@ -127,6 +127,15 @@
       margin: 10px 0 6px;
       display: block;
     }
+    .learn-badge {
+      display: inline-block; margin-top: 6px; padding: 4px 10px; border-radius: 6px;
+      font-size: 0.75rem; font-weight: 700; background: rgba(34,197,94,0.15); color: var(--ok);
+    }
+    .btn-reset-learn {
+      margin-top: 12px; padding: 10px 20px; border: 2px solid #334155; border-radius: 10px;
+      background: transparent; color: var(--muted); font-size: 0.85rem; font-weight: 600; cursor: pointer;
+    }
+    .btn-reset-learn:hover { border-color: var(--bad); color: var(--bad); }
   </style>
 </head>
 <body>
@@ -137,13 +146,16 @@
     </header>
     <div class="mode-tabs" id="mode-tabs">
       <button type="button" class="mode-tab active" data-mode="practice">Quiz</button>
+      <button type="button" class="mode-tab" data-mode="learn">Nauka</button>
       <button type="button" class="mode-tab" data-mode="exam">Egzamin</button>
     </div>
     <div id="start-screen" class="card start-screen">
       <p id="q-count"></p>
       <p id="start-desc">Pytania w losowej kolejności. Przy znakach nawigacyjnych wyświetlany jest obraz z PDF. Po każdej odpowiedzi zobaczysz poprawny wynik.</p>
       <p class="exam-badge" id="exam-info" style="display:none">Tryb egzaminacyjny: 75 losowych pytań · próg zdania: minimum 65 poprawnych · wynik dopiero na końcu</p>
+      <p class="learn-badge" id="learn-info" style="display:none">Tryb nauki: poprawna odpowiedź usuwa pytanie z puli · błędne zostają do powtórki · postęp zapisywany w przeglądarce</p>
       <button class="btn-start" id="btn-start">Rozpocznij quiz</button>
+      <button type="button" class="btn-reset-learn" id="btn-reset-learn" style="display:none">Reset postępu nauki</button>
     </div>
     <div id="quiz-area">
       <div class="progress-wrap">
@@ -190,10 +202,64 @@
 
     const EXAM_SIZE = 75;
     const EXAM_PASS = 65;
+    const LEARN_STORAGE_KEY = "sternik-quiz-mastered";
     let mode = "practice";
     let order = [], index = 0, correctCount = 0, answered = false;
     let examAnswers = [];
     let selectedExam = null;
+    let lastLearnOk = false;
+    const masteredIds = new Set();
+
+    function loadMastered() {
+      try {
+        const raw = localStorage.getItem(LEARN_STORAGE_KEY);
+        if (raw) JSON.parse(raw).forEach(id => masteredIds.add(id));
+      } catch (_) {}
+    }
+
+    function saveMastered() {
+      localStorage.setItem(LEARN_STORAGE_KEY, JSON.stringify([...masteredIds]));
+    }
+
+    function learnRemainingCount() {
+      return QUESTIONS.length - masteredIds.size;
+    }
+
+    function updateLearnProgressUI() {
+      const known = masteredIds.size;
+      const total = QUESTIONS.length;
+      const left = learnRemainingCount();
+      scoreLive.textContent = `Znane: ${known} · Do nauki: ${left}`;
+      progressText.textContent = order.length
+        ? `W sesji: ${order.length} pytań`
+        : "Koniec puli";
+      progressFill.style.width = (known / total) * 100 + "%";
+    }
+
+    function updateStartScreen() {
+      document.getElementById("exam-info").style.display = mode === "exam" ? "inline-block" : "none";
+      document.getElementById("learn-info").style.display = mode === "learn" ? "inline-block" : "none";
+      document.getElementById("btn-reset-learn").style.display = mode === "learn" ? "inline-block" : "none";
+      if (mode === "exam") {
+        document.getElementById("start-desc").textContent =
+          "75 losowych pytań bez podpowiedzi po każdej odpowiedzi. Na końcu zobaczysz wynik i informację, czy egzamin został zdany (minimum 65/75).";
+        document.getElementById("btn-start").textContent = "Rozpocznij egzamin";
+        qCountEl.textContent = `Baza: ${QUESTIONS.length} pytań`;
+      } else if (mode === "learn") {
+        document.getElementById("start-desc").textContent =
+          "Losowe pytania z puli do nauki. Po poprawnej odpowiedzi pytanie znika na stałe. Błędne wracają na koniec kolejki.";
+        document.getElementById("btn-start").textContent =
+          learnRemainingCount() === 0 ? "Cała baza opanowana" : "Rozpocznij naukę";
+        qCountEl.textContent = `Znane: ${masteredIds.size} · Do nauki: ${learnRemainingCount()} z ${QUESTIONS.length}`;
+      } else {
+        document.getElementById("start-desc").textContent =
+          "Pytania w losowej kolejności. Przy znakach nawigacyjnych wyświetlany jest obraz z PDF. Po każdej odpowiedzi zobaczysz poprawny wynik.";
+        document.getElementById("btn-start").textContent = "Rozpocznij quiz";
+        qCountEl.textContent = `Baza: ${QUESTIONS.length} pytań`;
+      }
+    }
+
+    loadMastered();
     const startScreen = document.getElementById("start-screen");
     const quizArea = document.getElementById("quiz-area");
     const qCountEl = document.getElementById("q-count");
@@ -209,26 +275,37 @@
     const questionCard = document.getElementById("question-card");
     const results = document.getElementById("results");
 
-    qCountEl.textContent = `Baza: ${QUESTIONS.length} pytań`;
+    updateStartScreen();
 
     document.querySelectorAll(".mode-tab").forEach(tab => {
       tab.addEventListener("click", () => {
         document.querySelectorAll(".mode-tab").forEach(t => t.classList.remove("active"));
         tab.classList.add("active");
         mode = tab.dataset.mode;
-        document.getElementById("exam-info").style.display = mode === "exam" ? "inline-block" : "none";
-        document.getElementById("start-desc").textContent = mode === "exam"
-          ? "75 losowych pytań bez podpowiedzi po każdej odpowiedzi. Na końcu zobaczysz wynik i informację, czy egzamin został zdany (minimum 65/75)."
-          : "Pytania w losowej kolejności. Przy znakach nawigacyjnych wyświetlany jest obraz z PDF. Po każdej odpowiedzi zobaczysz poprawny wynik.";
-        document.getElementById("btn-start").textContent = mode === "exam" ? "Rozpocznij egzamin" : "Rozpocznij quiz";
+        updateStartScreen();
       });
     });
 
+    document.getElementById("btn-reset-learn").onclick = () => {
+      if (!confirm("Usunąć cały zapisany postęp nauki? Wszystkie pytania wrócą do puli.")) return;
+      masteredIds.clear();
+      localStorage.removeItem(LEARN_STORAGE_KEY);
+      updateStartScreen();
+    };
+
     function startQuiz() {
+      if (mode === "learn" && learnRemainingCount() === 0) return;
       const all = shuffle(QUESTIONS.map((_, i) => i));
-      order = mode === "exam" ? all.slice(0, EXAM_SIZE) : all;
+      if (mode === "exam") {
+        order = all.slice(0, EXAM_SIZE);
+      } else if (mode === "learn") {
+        order = all.filter(i => !masteredIds.has(QUESTIONS[i].id));
+      } else {
+        order = all;
+      }
       index = 0;
       correctCount = 0;
+      lastLearnOk = false;
       examAnswers = mode === "exam" ? [] : null;
       startScreen.style.display = "none";
       document.getElementById("mode-tabs").style.display = "none";
@@ -245,9 +322,13 @@
       selectedExam = null;
       const q = QUESTIONS[order[index]];
       const total = order.length;
-      progressText.textContent = `Pytanie ${index + 1} z ${total}`;
-      progressFill.style.width = ((index) / total) * 100 + "%";
-      scoreLive.textContent = mode === "exam" ? "Tryb egzaminu" : `Poprawne: ${correctCount}`;
+      if (mode === "learn") {
+        updateLearnProgressUI();
+      } else {
+        progressText.textContent = `Pytanie ${index + 1} z ${total}`;
+        progressFill.style.width = ((index) / total) * 100 + "%";
+        scoreLive.textContent = mode === "exam" ? "Tryb egzaminu" : `Poprawne: ${correctCount}`;
+      }
       qNum.textContent = `Pytanie nr ${q.id}`;
       qText.textContent = q.question;
       if (q.image) {
@@ -290,6 +371,7 @@
       if (answered) return;
       answered = true;
       const ok = letter === q.correct;
+      if (mode === "learn") lastLearnOk = ok;
       if (ok) correctCount++;
       document.querySelectorAll(".option").forEach(opt => {
         opt.disabled = true;
@@ -302,8 +384,11 @@
       feedback.textContent = ok ? "✓ Poprawna odpowiedź!"
         : `✗ Błędna. Prawidłowa: ${q.correct.toUpperCase()}) ${q.options[q.correct]}`;
       btnNext.classList.add("show");
-      btnNext.textContent = "Następne pytanie";
-      scoreLive.textContent = `Poprawne: ${correctCount}`;
+      btnNext.textContent = order.length <= 1 && mode === "learn"
+        ? "Zakończ naukę"
+        : "Następne pytanie";
+      if (mode === "learn") updateLearnProgressUI();
+      else scoreLive.textContent = `Poprawne: ${correctCount}`;
     }
 
     function nextQuestion() {
@@ -313,6 +398,25 @@
         const q = QUESTIONS[order[index]];
         const ok = selectedExam === q.correct;
         examAnswers.push({ qIndex: order[index], picked: selectedExam, ok });
+        index++;
+        if (index >= order.length) showResults();
+        else renderQuestion();
+        return;
+      }
+      if (mode === "learn") {
+        const qIdx = order[index];
+        if (lastLearnOk) {
+          masteredIds.add(QUESTIONS[qIdx].id);
+          saveMastered();
+          order.splice(index, 1);
+        } else {
+          const [wrong] = order.splice(index, 1);
+          order.push(wrong);
+        }
+        lastLearnOk = false;
+        if (order.length === 0) showResults();
+        else renderQuestion();
+        return;
       }
       index++;
       if (index >= order.length) showResults();
@@ -324,20 +428,23 @@
       results.classList.add("show");
       progressFill.style.width = "100%";
 
-      const total = order.length;
+      let total = order.length;
       let score = correctCount;
 
       if (mode === "exam") {
         score = examAnswers.filter(a => a.ok).length;
         correctCount = score;
+      } else if (mode === "learn") {
+        total = QUESTIONS.length;
+        score = masteredIds.size;
       }
 
-      const pct = Math.round((score / total) * 100);
+      const pct = total > 0 ? Math.round((score / total) * 100) : 0;
       const scorePctEl = document.getElementById("score-pct");
       const verdictEl = document.getElementById("verdict");
       const titleEl = document.getElementById("results-title");
 
-      scorePctEl.textContent = mode === "exam" ? `${score}/${total}` : pct + "%";
+      scorePctEl.textContent = (mode === "exam" || mode === "learn") ? `${score}/${total}` : pct + "%";
       scorePctEl.classList.remove("result-pass", "result-fail");
 
       if (mode === "exam") {
@@ -389,6 +496,19 @@
           });
           examReviewEl.style.display = "block";
         }
+      } else if (mode === "learn") {
+        verdictEl.style.display = "block";
+        verdictEl.className = "verdict pass";
+        verdictEl.textContent = "BAZA OPANOWANA ✓";
+        scorePctEl.classList.add("result-pass");
+        titleEl.textContent = "Koniec nauki!";
+        scorePctEl.textContent = `${masteredIds.size}/${QUESTIONS.length}`;
+        document.getElementById("score-detail").textContent =
+          `Znasz wszystkie ${QUESTIONS.length} pytań z bazy.`;
+        document.getElementById("score-effectiveness").textContent =
+          "Możesz zresetować postęp na ekranie startowym i zacząć od nowa.";
+        const examReviewEl = document.getElementById("exam-review");
+        if (examReviewEl) examReviewEl.style.display = "none";
       } else {
         verdictEl.style.display = "none";
         titleEl.textContent = "Koniec quizu!";
@@ -409,6 +529,7 @@
       document.getElementById("mode-tabs").style.display = "flex";
       quizArea.classList.remove("active");
       btnNext.textContent = "Następne pytanie";
+      updateStartScreen();
     };
   </script>
 </body>
