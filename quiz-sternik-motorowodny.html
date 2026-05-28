@@ -142,7 +142,7 @@
   <div class="container">
     <header>
       <h1>Quiz – Sternik motorowodny</h1>
-      <p>Wind Sailing School - 368 pytań - version 1.2</p>
+      <p>Wind Sailing School - 368 pytań - version 1.3</p>
     </header>
     <div class="mode-tabs" id="mode-tabs">
       <button type="button" class="mode-tab active" data-mode="practice">Quiz</button>
@@ -208,6 +208,7 @@
     let examAnswers = [];
     let selectedExam = null;
     let lastLearnOk = false;
+    let learnAdvanceTimer = null;
     const masteredIds = new Set();
 
     function loadMastered() {
@@ -318,6 +319,10 @@
     }
 
     function renderQuestion() {
+      if (learnAdvanceTimer) {
+        clearTimeout(learnAdvanceTimer);
+        learnAdvanceTimer = null;
+      }
       answered = false;
       selectedExam = null;
       const q = QUESTIONS[order[index]];
@@ -383,12 +388,18 @@
       feedback.className = "feedback show " + (ok ? "ok" : "bad");
       feedback.textContent = ok ? "✓ Poprawna odpowiedź!"
         : `✗ Błędna. Prawidłowa: ${q.correct.toUpperCase()}) ${q.options[q.correct]}`;
+      if (mode === "learn") {
+        btnNext.classList.remove("show");
+        updateLearnProgressUI();
+        learnAdvanceTimer = setTimeout(() => {
+          learnAdvanceTimer = null;
+          nextQuestion();
+        }, ok ? 500 : 1400);
+        return;
+      }
       btnNext.classList.add("show");
-      btnNext.textContent = order.length <= 1 && mode === "learn"
-        ? "Zakończ naukę"
-        : "Następne pytanie";
-      if (mode === "learn") updateLearnProgressUI();
-      else scoreLive.textContent = `Poprawne: ${correctCount}`;
+      btnNext.textContent = "Następne pytanie";
+      scoreLive.textContent = `Poprawne: ${correctCount}`;
     }
 
     function nextQuestion() {
